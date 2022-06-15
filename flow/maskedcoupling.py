@@ -7,11 +7,11 @@ import jax
 import jax.numpy as jnp
 
 from typing import Callable, Optional, Tuple, List, Any
+from chex import Array
 
 from .bijector import ConditionalBijector
 
 BijectorParams = Any
-Array = jnp.ndarray
 
 
 class ConditionalMaskedCoupling(ConditionalBijector, distrax.MaskedCoupling):
@@ -47,13 +47,17 @@ class ConditionalMaskedCoupling(ConditionalBijector, distrax.MaskedCoupling):
 
         conditioner_input = masked_x
         conditioner_input = jnp.concatenate([masked_x, context], axis=-1)
+		# try broadcasting the context to the dimension of x
         #jnp.broadcast_to(
         #    context, x.shape[:-1] + (context.shape[-1],)
         #),
 
-		# condition on input + context 
+		# condition on input + context (contextualise before condition?)
         params = self._conditioner(conditioner_input) 
-        params += self._conditioner_eta(context)
+		#params += self._conditioner_eta(context)
+		# try and broadcast contexting over params
+        params += jnp.broadcast_to(
+				jnp.expand_dims(self._conditioner_eta(context), axis=-1), params.shape)
 
         y0, log_d = self._inner_bijector(params).forward_and_log_det(x)
         y = jnp.where(self._event_mask, x, y0)
@@ -81,7 +85,11 @@ class ConditionalMaskedCoupling(ConditionalBijector, distrax.MaskedCoupling):
 
 		# condition on input + context 
         params = self._conditioner(conditioner_input) 
-        params += self._conditioner_eta(context)
+		#params += self._conditioner_eta(context)
+
+		# try and broadcast contexting over params
+        params += jnp.broadcast_to(
+				jnp.expand_dims(self._conditioner_eta(context), axis=-1), params.shape)
 
         x0, log_d = self._inner_bijector(params).inverse_and_log_det(y)
         x = jnp.where(self._event_mask, y, x0)

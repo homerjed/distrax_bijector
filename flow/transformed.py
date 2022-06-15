@@ -31,7 +31,7 @@ class ConditionalTransformed(distrax.Transformed):
     def _sample_n(self, key: PRNGKey, n: int, context: Array) -> Array:
         """Returns `n` samples."""
         x = self.distribution.sample(seed=key, sample_shape=n)
-        y = jax.vmap(self.bijector.forward)(x, context)
+        y = jax.vmap(self.bijector.forward)(x, context=context)
         return y
 
     def _sample_n_and_log_prob(
@@ -51,7 +51,7 @@ class ConditionalTransformed(distrax.Transformed):
 			  A tuple of `n` samples and their log probs.
 		"""
         x, lp_x = self.distribution.sample_and_log_prob(seed=key, sample_shape=n)
-        y, fldj = jax.vmap(self.bijector.forward_and_log_det)(x, context)
+        y, fldj = jax.vmap(self.bijector.forward_and_log_det)(x, context=context)
         lp_y = jax.vmap(jnp.subtract)(lp_x, fldj)
         return y, lp_y
 
@@ -66,7 +66,7 @@ class ConditionalTransformed(distrax.Transformed):
         rng, sample_shape = dist_base.convert_seed_and_sample_shape(seed, sample_shape)
         num_samples = functools.reduce(operator.mul, sample_shape, 1)  # product
 
-        samples, log_prob = self._sample_n_and_log_prob(rng, num_samples, context)
+        samples, log_prob = self._sample_n_and_log_prob(rng, num_samples, context=context)
 
         samples = samples.reshape(sample_shape + samples.shape[1:])
         log_prob = log_prob.reshape(sample_shape + log_prob.shape[1:])
@@ -84,6 +84,6 @@ class ConditionalTransformed(distrax.Transformed):
             seed=seed, 
 			sample_shape=sample_shape
         )
-        y, fldj = jax.vmap(self.bijector.forward_and_log_det)(x, context)
+        y, fldj = jax.vmap(self.bijector.forward_and_log_det)(x, context=context)
         lp_y = jax.vmap(jnp.subtract)(lp_x, fldj)
         return y, lp_y, x

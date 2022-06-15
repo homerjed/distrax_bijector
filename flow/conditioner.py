@@ -1,5 +1,7 @@
+""" not in use... """
+
 import haiku as hk
-from typing import Seqeunce, Optional, 
+from typing import Seqeunce, Optional
 
 class CouplingConditioner(hk.Module):
 
@@ -8,7 +10,7 @@ class CouplingConditioner(hk.Module):
       output_dim: int,
       hidden_sizes: Sequence[int],
       num_bijector_params: int,
-      name: Optional[str] = 'nsf_conditioner',
+      name: Optional[str] = '',
   ):
     super().__init__(name=name)
     self.output_dim = output_dim

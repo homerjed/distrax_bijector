@@ -7,11 +7,13 @@ import jax.numpy as jnp
 from distrax._src.bijectors import bijector as base
 
 from typing import Any, Tuple
+from chex import Array
 
-Array = jnp.ndarray
+#Array = jnp.ndarray
 
 
 class ConditionalBijector(base.Bijector):
+
     def forward(self, x: Array, context: Any) -> Array:
         """Computes y = f(x)."""
         y, _ = self.forward_and_log_det(x, context=context)
