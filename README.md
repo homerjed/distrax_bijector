@@ -14,5 +14,5 @@ Use:
 Use:
 ```python moon.py``` 
 ## Two-Moons distribution
-![alt text](https://github.com/homerjed/distrax_bijector/blob/main/imgs/sample000000_moons.png)
-![alt text](https://github.com/homerjed/distrax_bijector/blob/main/imgs/sample007990_moons.png)
+![alt text](https://github.com/homerjed/distrax_bijector/blob/main/imgs/sample000000_moon.png)
+![alt text](https://github.com/homerjed/distrax_bijector/blob/main/imgs/sample007990_moon.png)
